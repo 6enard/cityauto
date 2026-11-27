@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Wrench, Car, Image, Inbox, Star, Info, Clock, LogOut, Lock, Mail } from 'lucide-react';
 import { Seo } from '@/components/Seo';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { services } from '@/config/services';
 import { vehicleBrands } from '@/config/brands';
 import { galleryImages } from '@/config/gallery';
@@ -29,6 +29,10 @@ export function AdminPage() {
   const [loading, setL] = useState(true);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setL(false);
+      return;
+    }
     (async () => {
       const { data } = await supabase
         .from('service_enquiries')

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote, MessageSquare } from 'lucide-react';
 import { Reveal } from '@/components/Reveal';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface Testimonial {
   id: string;
@@ -18,6 +18,10 @@ export function Testimonials() {
 
   useEffect(() => {
     let active = true;
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       const { data } = await supabase
         .from('testimonials')

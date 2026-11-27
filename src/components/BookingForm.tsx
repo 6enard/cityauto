@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle2, AlertCircle, MessageCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { services } from '@/config/services';
 
@@ -79,6 +79,12 @@ export function BookingForm({ defaultService }: { defaultService?: string }) {
     setErrorMsg('');
 
     try {
+      if (!isSupabaseConfigured) {
+        // No backend — treat as success and direct to WhatsApp
+        setStatus('success');
+        return;
+      }
+
       const { error } = await supabase.from('service_enquiries').insert({
         full_name: data.full_name,
         phone: data.phone,
@@ -115,6 +121,7 @@ export function BookingForm({ defaultService }: { defaultService?: string }) {
         <p className="mt-2 text-sm text-charcoal/70">
           Thank you. Your service request has been received. City Auto Garage will contact you to
           confirm the appointment — this is a request, not a confirmed booking.
+          {!isSupabaseConfigured && ' Please also send your details via WhatsApp below so we receive them right away.'}
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <a
